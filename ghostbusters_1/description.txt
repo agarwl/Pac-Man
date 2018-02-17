@@ -1,0 +1,46 @@
+
+Q1)
+    In the case when noisyDistance is not None, we update our beliefs by calculating the posterior
+    distribution for beliefs by using our prior beliefs i.e. posterior = prior * likelihood where 
+    our new belief of ghost being present in a position p is given by prior belief of ghost being present in position p multiplied by the probability of observing the nosiyDistance given that the ghost is in the position p.
+    i.e newBelief[pos] = belief[pos] * P(noisyDistance | pos) (in code , it's trueDistance calculated using pos)
+
+    If noisyDistance is None, it means the ghost has been caputured at a position 'p' given by self.JailPosition() and our beleifs are updated in such a way that we assign probability 1 to position 'p' and probability 0 for other self.legalPositions().
+
+>>>> In test cases where is Pacman boxed in, why does Pacman sometimes have trouble finding the exact location of the ghost?
+Ans. 
+In test cases such as test_cases/q1/2-ExactObserve.test pacman is boxed in and there are multiple positions at a distance equal to the true distace of the ghost from the pacman, for each of these positions (4 in the given test case) the probability of observing a particular nosiyDistance is same, so the pacman thinks that each of these positions is equally likely for ghost to be present. (as observed on running)
+
+In the first case, only one position corresponds to the true distance and thus the pacman eventually finds out where the ghost is.
+In other cases, the pacman is able to move around and observe differnt values of true distance of the ghost.
+	 
+
+Q2)
+
+	In this question, I iterate over all the legalPositions of the ghosts.
+
+	For a given LegalPosition (oldPos), I calculate the position Distribution (call it D) for the new possible positions of the ghost using exactly one transition step.
+
+	Then, using D (position dist), I propogate the belief from the oldPos to these new positions i.e.
+	newBelief[newPos] += belief[oldPos] * P_D(newPos).
+
+	Assume, P_D gives the probability of being in a position using the Distribution.
+
+>>>> For which of the test cases do you notice differences emerging in the shading of the squares?
+Ans.
+
+test_cases/q2/2-ExactElapse.test -> Bottom squares are lighter
+test_cases/q2/3-ExactElapse.test -> Bottom squares are lighter
+test_cases/q2/4-ExactElapse.test -> Left side bottom squares are lighter
+
+>>>> Can you explain why some squares get lighter and some squares get darker?
+
+Ans. This is because the square where the pacman moves in and is closer by get higher beliefs due to belief propagation and thus are lighter as compared to the square where the pacman seldom/never goes and is quite far from. Also, mostly blocks close to each other are of same colour as either they both are visited often or seldom.
+
+Q3)
+
+	In this, I first compute the most likely position of each living ghost using the belief distribution we have for that ghost!
+
+	Then, using these most likely positions, I calculate the position of the closest living ghost.
+
+	Then, for each legal action, I calculate the new Distance (maze distance) of the pacman (after taking the action) from the closest ghost(above) and pick the action which minimizes this new Distance.
